@@ -1,0 +1,46 @@
+server:
+  port: 80
+
+mybatis:
+  configuration:
+    #开启驼峰命名转换
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  #起别名，可省略写mybatis的xml中的resultType的全路径
+  type-aliases-package: com.example.bean
+
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://82.156.12.153/xiaochengxu?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=true
+    username: root
+    password: 123456
+  jpa:
+    database: mysql
+
+  redis:
+    host: 112.126.72.145
+    port: 6379
+    password: hututu666
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 500
+        min-idle: 0
+      shutdown-timeout: 0ms
+
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+
+  resources:
+    static-locations: classpath:/static/
+
+  servlet:
+    multipart:
+      # 上传文件总的最大值
+      max-file-size: 100MB
+      # 单个文件的最大值
+      max-request-size: 10MB

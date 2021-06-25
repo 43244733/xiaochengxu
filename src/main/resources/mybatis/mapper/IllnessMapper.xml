@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.mapper.IllnessMapper">
+
+
+    <insert id="insertIllness">
+        insert into illness values (null, #{department}, #{month}, #{day}, #{type}, #{wxId})
+    </insert>
+
+    <update id="updateshangwu1">
+        update pre set shangwu1 = #{number} where id = 1
+    </update>
+
+    <update id="updateshangwu2">
+        update pre set shangwu2 = #{number} where id = 1
+    </update>
+
+    <update id="updatexiawu1">
+        update pre set xiawu1 = #{number} where id = 1
+    </update>
+
+    <update id="updatexiawu2">
+        update pre set xiawu2 = #{number} where id = 1
+    </update>
+
+    <delete id="deleteIllness">
+        delete from illness where wx_id = #{wxId}
+    </delete>
+
+    <select id="selectIllness" resultType="com.example.bean.Illness">
+        select * from illness where wx_id = #{wxId}
+    </select>
+
+    <select id="selectOrder" resultType="com.example.bean.Pre">
+        select * from pre
+    </select>
+</mapper>

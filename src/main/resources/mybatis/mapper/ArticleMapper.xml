@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.mapper.ArticleMapper">
+
+    <insert id="insertArticle">
+        insert into article values (null, #{title}, #{author}, #{brief}, #{content}, #{type}, #{time}, 0)
+    </insert>
+
+    <insert id="insertView">
+        insert into view values (null, #{param1}, #{param2}, 1)
+    </insert>
+
+    <update id="updateArticle">
+        update article set title = #{title}, author = #{author}, brief = #{brief}, content = #{content}
+        where id = #{id}
+    </update>
+
+    <update id="updateNum">
+        update article set num = #{num} where id =#{id}
+    </update>
+
+    <delete id="deleteArticle">
+        delete from article where id = #{id}
+    </delete>
+
+    <select id="selectAllArticle" resultType="com.example.bean.Article">
+        select * from article order by id desc
+    </select>
+
+    <select id="selectArticleCount" resultType="java.lang.Integer">
+        select count(*) from article
+    </select>
+
+    <select id="selectArticleById" resultType="com.example.bean.Article">
+        select id, title, author, brief, content, type, time, num from article where id = #{id} order by id desc
+    </select>
+
+    <select id="selectAllView" resultType="com.example.bean.View">
+        select * from view where wx_id = #{wxId}
+    </select>
+
+    <select id="selectViewById" resultType="java.lang.String">
+        select look from view where a_id = #{param1} and wx_id = #{param2}
+    </select>
+
+    <select id="selectArticleNumByAId" resultType="java.lang.Integer">
+        select num from article where id = #{aid}
+    </select>
+
+    <select id="selectAllArticleIdAndTitle" resultType="com.example.bean.Article">
+        select id, title, type from article order by id desc
+    </select>
+
+</mapper>

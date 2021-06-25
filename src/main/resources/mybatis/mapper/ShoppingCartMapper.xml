@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.mapper.ShoppingCartMapper">
+
+
+    <insert id="insertGoods">
+        insert into shoppingcart values (null, #{param1}, #{param2}, 1)
+    </insert>
+
+    <insert id="insertPaid">
+        insert into shoppingcart values (null, #{param1}, #{param2}, 2)
+    </insert>
+
+    <insert id="insertAddress">
+        insert into address values (#{wxId}, #{address})
+    </insert>
+
+    <update id="updatePaid">
+        update shoppingcart set type = 2 where g_id = #{param1} and wx_id = #{param2}
+    </update>
+
+    <update id="updateSend">
+        update shoppingcart set type = 3 where g_id = #{param1} and wx_id = #{param2}
+    </update>
+
+    <update id="updateMess">
+        update shoppingcart set type = 4 where g_id = #{param1} and wx_id = #{param2}
+    </update>
+
+    <update id="updateAddress">
+        update address set address = #{address} where wx_id = #{wxId}
+    </update>
+
+    <delete id="deleteGoods">
+        delete from shoppingcart where g_id = #{param1} and wx_id = #{param2}
+    </delete>
+
+    <select id="selectGoods" resultType="com.example.bean.Shop">
+        select * from shop where id = any(
+            select g_id from shoppingcart where wx_id = #{wxId} and type = 1
+        )
+    </select>
+
+    <select id="selectWaitPaid" resultType="com.example.bean.Shop">
+         select * from shop where id = any(
+            select g_id from shoppingcart where wx_id = #{wxId} and type = 2
+        )
+    </select>
+
+    <select id="selectWaitSend" resultType="com.example.bean.Shop">
+        select * from shop where id = any(
+            select g_id from shoppingcart where wx_id = #{wxId} and type = 3
+        )
+    </select>
+
+    <select id="selectWaitMess" resultType="com.example.bean.Shop">
+        select * from shop where id = any(
+            select g_id from shoppingcart where wx_id = #{wxId} and type = 4
+        )
+    </select>
+
+    <select id="selectAddress" resultType="com.example.bean.Address">
+        select * from address where wx_id = #{wxId}
+    </select>
+</mapper>

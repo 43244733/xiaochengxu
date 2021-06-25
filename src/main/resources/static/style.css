@@ -1,0 +1,126 @@
+* {
+    margin: 0;
+    padding: 0;
+    /* 假如需要并排放置两个带边框的框，
+      可通过将 box-sizing 设置为 “border-box”。
+      这可令浏览器呈现出带有指定宽度和高度的框，
+      并把边框和内边距放入框中。*/
+    box-sizing: border-box;
+}
+
+.container {
+    /*自动居中*/
+    margin: auto;
+    width: 500px;
+    /* 如果内容被修剪，则浏览器会显示滚动条以便查看其余的内容。*/
+    overflow: auto;
+    padding: 3rem 2rem;
+}
+
+body {
+    /* font-family 规定元素的字体系列。如果浏览器不支持第一个字体，则会尝试下一个。  */
+    font-family: Arial, Helvetica, sans-serif;
+    /* line-height 属性设置行间的距离（行高）*/
+    line-height: 1.6;
+}
+
+header {
+    background: #f4f4f4;
+    padding: 1rem;
+    text-align: center;
+}
+
+#my-form {
+    padding: 2rem;
+    background: #f4f4f4;
+}
+
+#my-form label {
+    display: block;
+}
+
+#my-form input[type='text'], input[type='password'], textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    /* 该属性允许为元素添加圆角边框 */
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    border: 0;
+    background: #333;
+    color: #fff;
+    border-radius: 5px;
+    margin: 5px 0;
+}
+
+.btn:hover {
+    background: #444;
+}
+
+.btn a {
+    text-decoration: none;
+    text-align: center;
+    color: #fff;
+    display: block;
+}
+
+.bg-dark {
+    background: #333;
+    color: #fff;
+}
+
+.error {
+    background: orangered;
+    color: #fff;
+    padding: 5px;
+    margin: 5px;
+}
+
+.button {
+    height: 30px;
+    line-height: 40px;
+}
+
+.button a {
+    margin-left: 5px;
+    padding: 5px;
+    background: #f4f4f4;
+    color: #000000;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.button a:hover {
+    background: #a6a8a8;
+}
+
+#system-menu {
+    margin: auto;
+    width: 700px;
+    overflow: auto;
+}
+
+#system-menu a {
+    display: block;
+    width: 250px;
+    height: 150px;
+    float: left;
+    background: #21a8fc;
+    margin: 20px 50px 10px 50px;
+    text-decoration: none;
+    color: #f1f1f1;
+    line-height: 150px;
+    font-size: 30px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+#system-menu a:hover {
+    background: #46c47c;
+}
