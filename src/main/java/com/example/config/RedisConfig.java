@@ -13,9 +13,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @EnableAutoConfiguration
-
-/*
-    Redis序列化
+/**
+ * Redis序列化
  */
 public class RedisConfig {
 

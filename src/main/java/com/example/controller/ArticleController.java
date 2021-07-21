@@ -5,21 +5,24 @@ import com.example.bean.View;
 import com.example.bean.ViewResult;
 import com.example.service.ArticleService;
 import com.example.util.RedisUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
+/**
+ * 文章管理
+ */
+@Api(tags = "ArticleController", description = "文章管理")
 @RestController
-@SpringBootApplication
 public class ArticleController {
     @Autowired
     private ArticleService articleService;
@@ -30,14 +33,14 @@ public class ArticleController {
     // 日志记录
     private static final Logger LOGGER = LoggerFactory.getLogger(ArticleController.class);
 
-    // 防止别人乱搞数据库
+    @ApiOperation("防止别人搞数据库")
     @RequestMapping(value = {"", "index"}, method = RequestMethod.GET)
     public ModelAndView nihao(HttpSession session) {
         ModelAndView mv = new ModelAndView("nihao");
         return mv;
     }
 
-    // 主页
+    @ApiOperation("主页跳转")
     @RequestMapping(value = "master", method = RequestMethod.GET)
     public ModelAndView index(HttpSession session) {
         ModelAndView mv = new ModelAndView("index");
@@ -46,13 +49,14 @@ public class ArticleController {
         return mv;
     }
 
-    // 增加
+    @ApiOperation("跳转文章添加页面")
     @RequestMapping(value = "insertArticle", method = RequestMethod.GET)
     public ModelAndView insertArticle() {
         ModelAndView mv = new ModelAndView("insertArticle");
         return mv;
     }
 
+    @ApiOperation("文章添加")
     @RequestMapping(value = "doInsertArticle", method = RequestMethod.GET)
     public ModelAndView doInsertArticle(Article article) {
         articleService.insertArticle(article);
@@ -60,19 +64,19 @@ public class ArticleController {
         return mv;
     }
 
-    // 查询返回json
-    @RequestMapping(value = "/showArticle", produces = "application/json; charset=utf-8")
+    @ApiOperation("查询所有文章 返回json")
+    @RequestMapping(value = "/showArticle", produces = "application/json; charset=utf-8", method = RequestMethod.GET)
     public List<Article> showArticle() {
         return articleService.selectAllArticle();
     }
 
-    // 查询返回json
+    @ApiOperation("查询是否已看过 返回json")
     @RequestMapping(value = "/selectAllView", produces = "application/json; charset=utf-8")
     public List<View> selectAllView(String wxId) {
         return articleService.selectAllView(wxId);
     }
 
-    // 根据文章id查询文章 并增加浏览次数和“已读”标签
+    @ApiOperation("根据文章id查询文章 并增加浏览次数和“已读”标签")
     @RequestMapping(value = "/selectArticleById", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public Article selectArticleById(Integer aId, String wxId) {
         String key = "article:id:" + aId + ":num:";
@@ -123,8 +127,7 @@ public class ArticleController {
         articleService.updateNum(id, article.getNum() + 1);*//*
     }*/
 
-    // 查询返回json
-    // 查询文章ID、题目以及是否已阅读过
+    @ApiOperation("查询文章ID、题目以及是否已阅读过")
     @RequestMapping(value = "/selectAll", produces = "application/json; charset=utf-8")
     public ViewResult selectAll(String wxId) {
         List<Article> articles = articleService.selectAllArticleIdAndTitle();
@@ -133,7 +136,7 @@ public class ArticleController {
         return viewResult;
     }
 
-    // 查询
+    @ApiOperation("查询所有文章")
     @RequestMapping(value = "selectAllArticle", method = RequestMethod.GET)
     public ModelAndView selectAllArticle(HttpSession session) {
         ModelAndView mv = new ModelAndView("doSelectAllArticle");
@@ -141,7 +144,7 @@ public class ArticleController {
         return mv;
     }
 
-    // 把修改内容返回页面
+    @ApiOperation("把修改内容返回页面")
     @RequestMapping(value = "updateArticle", method = RequestMethod.GET)
     public ModelAndView updateArticle(Model model, Integer id) {
         ModelAndView mv = new ModelAndView("updateArticle");
@@ -150,7 +153,7 @@ public class ArticleController {
         return mv;
     }
 
-    // 修改
+    @ApiOperation("修改文章")
     @RequestMapping(value = "doUpdateArticle", method = RequestMethod.GET)
     public ModelAndView doUpdateArticle(Article article) {
         ModelAndView mv = new ModelAndView("redirect:/selectAllArticle");
@@ -158,13 +161,14 @@ public class ArticleController {
         return mv;
     }
 
-    // 删除
+    @ApiOperation("跳转删除文章页面")
     @RequestMapping(value = "deleteArticle", method = RequestMethod.GET)
     public ModelAndView deleteArticle(Model model) {
         ModelAndView mv = new ModelAndView("deleteArticle");
         return mv;
     }
 
+    @ApiOperation("删除文章")
     @RequestMapping(value = "doDeleteArticle", method = RequestMethod.GET)
     public ModelAndView doDeleteArticle(Integer id) {
         ModelAndView mv = new ModelAndView("redirect:/selectAllArticle");

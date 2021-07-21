@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.mapper.OrderInfoMapper">
+
+    <insert id="insertOrderInfo">
+        insert into goods_order
+        values (
+        #{id},
+        #{status},
+        #{recName},
+        #{recAddress},
+        #{recPhone},
+        #{goodsId},
+        #{goodsName},
+        #{userId},
+        #{userName},
+        #{goodsCount},
+        #{goodsPrice},
+        #{createDate},
+        null,
+        null,
+        null,
+        #{sign}
+        )
+    </insert>
+
+    <update id="updatePayTime">
+        update goods_order set pay_date = #{date} where id = #{id}
+    </update>
+
+    <select id="selectOrderById" resultType="com.example.bean.OrderInfo">
+        select
+        id,
+        goods_price,
+        goods_name
+        from goods_order
+        where id = #{id}
+    </select>
+
+</mapper>

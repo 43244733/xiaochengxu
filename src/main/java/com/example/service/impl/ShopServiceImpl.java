@@ -85,4 +85,14 @@ public class ShopServiceImpl implements ShopService
     {
         shopMapper.insertHistory(gId, wxId);
     }
+
+    @Override
+    public Integer selectGoodsNumById(Integer goodsId) {
+        return shopMapper.selectGoodsNumById(goodsId);
+    }
+
+    @Override
+    public int updateStock(Integer goodsId) {
+        return shopMapper.updateStock(goodsId);
+    }
 }

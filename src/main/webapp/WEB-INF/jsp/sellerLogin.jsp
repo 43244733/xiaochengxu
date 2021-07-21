@@ -39,10 +39,11 @@
 
         <div class="login-font">
             <i>登 录</i> 或 <a href="insertUser"><span>注 册</span></a>
+
         </div>
 
         <div class="am-u-sm-10 login-am-center">
-            <form class="am-form" action="doSellerLogin" method="get">
+            <form class="am-form" action="/doSellerLogin" method="get">
                 <fieldset>
                     <div class="am-form-group">
                         <input type="text" class="" id="doc-ipt-email-1" placeholder="输入账号" name="name">
@@ -53,6 +54,7 @@
                     <p>
                         <button type="submit" class="am-btn am-btn-default">登录</button>
                     </p>
+
                 </fieldset>
             </form>
         </div>

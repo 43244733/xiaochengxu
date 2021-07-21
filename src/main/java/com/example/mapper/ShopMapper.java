@@ -31,4 +31,14 @@ public interface ShopMapper
     void deleteHistory(String wxId);
 
     void insertHistory(Integer gId, String wxId);
+
+    /**
+     * 查看某个商品的库存
+     */
+    Integer selectGoodsNumById(Integer goodsId);
+
+    /**
+     * 减库存
+     */
+    int updateStock(Integer goodsId);
 }

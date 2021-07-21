@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 
 @RestController
-@SpringBootApplication
-public class test
+
+public class TestDemo
 {
+
     @RequestMapping(value = "xxx")
     //获取openid
     public static Map<String, Object> getWxUserOpenid(String code)

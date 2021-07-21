@@ -3,16 +3,18 @@ package com.example.controller;
 import java.util.Map;
 
 import com.example.service.WxUserService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 微信小程序用户管理
+ */
+@Api(tags = "WxUserController", description = "微信小程序用户管理")
 @RestController
-@SpringBootApplication
-public class WxUserController
-{
+public class WxUserController {
     @Autowired
     private WxUserService wxUserService;
  
@@ -28,8 +30,7 @@ public class WxUserController
 
     @RequestMapping("/add")
     @ResponseBody
-    public String addUser(String code, String encryptedData, String iv)
-    {
+    public String addUser(String code, String encryptedData, String iv) {
         String str = "code = " + code + " ,encryptedData = " + encryptedData + " ,iv=" + iv;
         System.out.println(str);
         return "已收到code等" + str;
@@ -37,16 +38,14 @@ public class WxUserController
 
     @RequestMapping("/findUserIsExcited")
     @ResponseBody
-    public Map<String, Object> findUserIsExcited(String code)
-    {
+    public Map<String, Object> findUserIsExcited(String code) {
         Map<String, Object> map = wxUserService.findUserIsExcited(code);
         return map;
     }
 
     @RequestMapping("/excitedOrAdd")
     @ResponseBody
-    public Map<String, Object> ExcitedOrAdd(String code, String encryptedData, String iv)
-    {
+    public Map<String, Object> ExcitedOrAdd(String code, String encryptedData, String iv) {
         Map<String, Object> map = wxUserService.excitedOrAdd(code, encryptedData, iv);
         return map;
     }

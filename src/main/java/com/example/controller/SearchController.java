@@ -3,29 +3,30 @@ package com.example.controller;
 import com.example.bean.Shop;
 import com.example.service.SerachBase;
 import com.example.service.ShopService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 商品搜索
+ */
+@Api(tags = "SearchController", description = "商品搜索")
 @RestController
-@SpringBootApplication
-public class SearchController
-{
+public class SearchController {
+
     @Autowired
     private ShopService shopService;
 
-    // 模糊搜索返回json
+    @ApiOperation("模糊搜索")
     @RequestMapping(value = "/search", produces = "application/json; charset=utf-8")
-    public List<Shop> search(String input)
-    {
+    public List<Shop> search(String input) {
         SerachBase serachBase = SerachBase.getSerachBase();
         List<Shop> shops = shopService.selectAll();
-        for (int i = 0; i < shops.size(); i++)
-        {
+        for (int i = 0; i < shops.size(); i++) {
             String id = String.valueOf(shops.get(i).getId());
             String value = shops.get(i).getName();
             serachBase.add(id, value, value);
@@ -37,14 +38,12 @@ public class SearchController
          * @Description: 根据ids获取详细，id之间用","隔开
          */
 
-        if (ids == null || "".equals(ids))
-        {
+        if (ids == null || "".equals(ids)) {
             return null;
         }
         List<Shop> objs = new ArrayList<>();
         String[] idArray = ids.split(",");
-        for (String id : idArray)
-        {
+        for (String id : idArray) {
             Shop shop = shopService.selectGoodsById(Integer.valueOf(id));
             objs.add(shop);
         }

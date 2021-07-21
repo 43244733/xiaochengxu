@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.mapper.CallBackMapper">
+
+
+    <insert id="insertCallBack">
+        insert into call_back values (
+        null,
+        #{id},
+        #{tradeNo},
+        #{inTradeNo},
+        #{outTradeNo},
+        #{tradeType},
+        #{description},
+        #{payType},
+        #{amount},
+        #{attach},
+        #{createTime},
+        #{payTime},
+        #{notifyCount}
+        )
+    </insert>
+
+    <select id="selectSignByTrade" resultType="java.lang.String">
+        select sign from goods_order where id = #{id}
+    </select>
+</mapper>

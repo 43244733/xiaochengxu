@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.service.ShopService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,11 +17,9 @@ import java.util.UUID;
 /**
  * 文件上传
  */
+@Api(tags = "FileController", description = "文件上传")
 @Controller
-public class FileController
-{
+public class FileController {
     @Autowired
     private ShopService shopService;
-
-
 }

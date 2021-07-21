@@ -46,6 +46,16 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/")
                 .addResourceLocations("classpath:/templates/");
+
+        // swagger
+        registry.addResourceHandler("swagger-ui.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+
+        // swagger美化版
+        registry.addResourceHandler("doc.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+
+
     }
 
     /**
@@ -80,6 +90,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 .allowedOrigins("*")
                 .allowedMethods("POST", "GET", "PUT", "OPTIONS", "DELETE")
                 .allowCredentials(true)
+                .maxAge(3600)
                 .allowedHeaders("*");
     }
 }

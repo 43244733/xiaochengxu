@@ -17,6 +17,10 @@
         update shop set url = #{param1} where id = #{param2}
     </update>
 
+    <update id="updateStock">
+        update shop set number = number -1 where id = #{goodsId}
+    </update>
+
     <delete id="deleteGoods">
         delete from shop where id = #{id}
     </delete>
@@ -49,6 +53,10 @@
     <select id="selectHistoryTopSix" resultType="com.example.bean.Shop">
         select * from shop where id = any(
             select g_id from history where wx_id = #{wxId} ) order by id desc limit 0, 6
+    </select>
+
+    <select id="selectGoodsNumById" resultType="java.lang.Integer">
+        select number from shop where id = #{goodsId}
     </select>
 
 </mapper>

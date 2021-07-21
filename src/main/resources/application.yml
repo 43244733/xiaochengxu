@@ -44,3 +44,14 @@ spring:
       max-file-size: 100MB
       # 单个文件的最大值
       max-request-size: 10MB
+
+face:
+  config:
+    api-key: a5drVUztej8EnWFkQfn2p4lMmHplDOrE
+    api-secret: nd1aBdRCWnSj_MpvdiAhOoCEzUlTIZlV
+    outer-id: firstFaceSet
+
+wx:
+  config:
+    app-id: 2104129103
+    key: 7f36f8af1b6e19bd75c63584d8ca244b
