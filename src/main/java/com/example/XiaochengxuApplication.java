@@ -4,8 +4,10 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @MapperScan("com.example.mapper")
+@EnableScheduling //开启定时任务
 @SpringBootApplication
 public class XiaochengxuApplication {
 
