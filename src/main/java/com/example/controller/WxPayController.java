@@ -10,6 +10,7 @@ import com.example.service.ShopService;
 import com.example.util.Sign;
 import com.example.util.WxConstUtil;
 import com.google.gson.Gson;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 public class WxPayController {
@@ -45,6 +48,7 @@ public class WxPayController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WxPayController.class);
 
+    @ApiOperation("支付成功，获取异步回调")
     @RequestMapping(value = "/success", method = RequestMethod.POST)
     @ResponseBody
     public String success(@RequestParam("app_id") Integer appId,
@@ -60,7 +64,7 @@ public class WxPayController {
                           @RequestParam("pay_time") String payTime,
                           @RequestParam("notify_count") Integer notifyCount,
                           @RequestParam("sign") String signAfter
-    ) throws UnknownHostException {
+    ) throws UnknownHostException, ExecutionException, InterruptedException {
         // 验证数据签名
 
         OrderInfo orderInfo = orderInfoService.selectOrderById(Long.valueOf(outTradeNo));
@@ -89,26 +93,39 @@ public class WxPayController {
         if (sign.equals(signAfter)) {
             // 验证异步回调通知sign成功
 
-            new Thread(() -> {
+            CompletableFuture<Boolean> completableFuture = CompletableFuture.supplyAsync(() -> {
                 // 记录日志
-                callBackService.insertCallBack(new CallBack(appId, tradeNo, inTradeNo, outTradeNo, tradeType, description,
+                int insertCallBack = callBackService.insertCallBack(new CallBack(appId, tradeNo, inTradeNo, outTradeNo, tradeType, description,
                         payType, amount, attach, createTime, payTime, notifyCount));
 
-                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-                Date date = null;
-                try {
-                    date = format.parse(payTime);
+                if (insertCallBack > 0) {
+                    return true;
+                } else {
+                    return false;
                 }
-                catch (ParseException e) {
-                    LOGGER.error("支付时间生成出错：", e);
+            });
+
+            completableFuture.whenComplete((t, u) -> {
+
+                if (t == true) {
+                    // 订单模块加入支付时间
+                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    Date date = null;
+                    try {
+                        date = format.parse(payTime);
+                    }
+                    catch (ParseException e) {
+                        LOGGER.error("支付时间生成出错：", e);
+                    }
+                    orderInfoService.updatePayTime(date, Long.valueOf(outTradeNo));
                 }
 
-                // 订单模块加入支付时间
-                orderInfoService.updatePayTime(date, Long.valueOf(outTradeNo));
+            }).exceptionally((e) -> {
 
-            }).start();
+                LOGGER.error(e.toString());
+                return false;
 
+            }).get();
 
             return "success";
         }
