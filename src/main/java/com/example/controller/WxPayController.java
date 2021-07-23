@@ -60,7 +60,7 @@ public class WxPayController {
                           @RequestParam("pay_time") String payTime,
                           @RequestParam("notify_count") Integer notifyCount,
                           @RequestParam("sign") String signAfter
-    ) throws ParseException, UnknownHostException {
+    ) throws UnknownHostException {
         // 验证数据签名
 
         OrderInfo orderInfo = orderInfoService.selectOrderById(Long.valueOf(outTradeNo));
@@ -89,15 +89,26 @@ public class WxPayController {
         if (sign.equals(signAfter)) {
             // 验证异步回调通知sign成功
 
-            // 记录日志
-            callBackService.insertCallBack(new CallBack(appId, tradeNo, inTradeNo, outTradeNo, tradeType, description,
-                    payType, amount, attach, createTime, payTime, notifyCount));
+            new Thread(() -> {
+                // 记录日志
+                callBackService.insertCallBack(new CallBack(appId, tradeNo, inTradeNo, outTradeNo, tradeType, description,
+                        payType, amount, attach, createTime, payTime, notifyCount));
 
-            DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = format.parse(payTime);
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-            // 订单模块加入支付时间
-            orderInfoService.updatePayTime(date, Long.valueOf(outTradeNo));
+                Date date = null;
+                try {
+                    date = format.parse(payTime);
+                }
+                catch (ParseException e) {
+                    LOGGER.error("支付时间生成出错：", e);
+                }
+
+                // 订单模块加入支付时间
+                orderInfoService.updatePayTime(date, Long.valueOf(outTradeNo));
+
+            }).start();
+
 
             return "success";
         }

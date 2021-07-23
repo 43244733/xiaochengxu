@@ -24,6 +24,7 @@ import java.util.List;
 @Api(tags = "ArticleController", description = "文章管理")
 @RestController
 public class ArticleController {
+
     @Autowired
     private ArticleService articleService;
 
@@ -174,6 +175,11 @@ public class ArticleController {
         ModelAndView mv = new ModelAndView("redirect:/selectAllArticle");
         articleService.deleteArticle(id);
         return mv;
+    }
+
+    public static void main(String[] args) {
+
+
     }
 
 

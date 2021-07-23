@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @MapperScan("com.example.mapper")
-//@SpringBootApplication(scanBasePackages = "com.example")
 @SpringBootApplication
 public class XiaochengxuApplication {
 

@@ -20,12 +20,15 @@
         null,
         null,
         null,
-        #{sign}
         )
     </insert>
 
     <update id="updatePayTime">
         update goods_order set pay_date = #{date} where id = #{id}
+    </update>
+
+    <update id="updateOverTimeStatus">
+        update goods_order set status = 2 where id = #{orderId}
     </update>
 
     <select id="selectOrderById" resultType="com.example.bean.OrderInfo">

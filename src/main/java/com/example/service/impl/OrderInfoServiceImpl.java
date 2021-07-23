@@ -31,4 +31,9 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     public OrderInfo selectOrderById(Long id) {
         return orderInfoMapper.selectOrderById(id);
     }
+
+    @Override
+    public int updateOverTimeStatus(Long orderId) {
+        return orderInfoMapper.updateOverTimeStatus(orderId);
+    }
 }

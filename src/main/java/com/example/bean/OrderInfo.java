@@ -15,7 +15,7 @@ public class OrderInfo {
 
     private Long id;                // 订单号
 
-    private Integer status;         // 订单状态
+    private Integer status;         // 订单状态 0->未支付 1->已支付 2->超时 3->已发货 4->已收货 5->待退款 6->已退款
 
     private String recName;         // 收货人
 
@@ -43,7 +43,5 @@ public class OrderInfo {
     private Date deliverDate;       // 发货时间
 
     private Date recDate;           // 收货时间
-
-    private String sign;            // 算法签名前缀
 
 }

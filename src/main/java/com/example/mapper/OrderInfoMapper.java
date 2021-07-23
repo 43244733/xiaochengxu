@@ -31,4 +31,11 @@ public interface OrderInfoMapper
      * @return
      */
     OrderInfo selectOrderById(Long id);
+
+    /**
+     * 更新订单状态为超时
+     * @param orderId
+     * @return
+     */
+    int updateOverTimeStatus(Long orderId);
 }
