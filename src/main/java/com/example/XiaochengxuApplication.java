@@ -7,7 +7,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @MapperScan("com.example.mapper")
-@EnableScheduling //开启定时任务
+//开启定时任务
+@EnableScheduling
 @SpringBootApplication
 public class XiaochengxuApplication {
 
