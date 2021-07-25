@@ -177,10 +177,4 @@ public class ArticleController {
         return mv;
     }
 
-    public static void main(String[] args) {
-
-
-    }
-
-
 }

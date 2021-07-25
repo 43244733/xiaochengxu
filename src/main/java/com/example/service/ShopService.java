@@ -39,4 +39,9 @@ public interface ShopService
      * 减库存
      */
     int updateStock(Integer goodsId);
+
+    /**
+     * 加库存
+     */
+    int updateAddStock(Integer goodsId);
 }

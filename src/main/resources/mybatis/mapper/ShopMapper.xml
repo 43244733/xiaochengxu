@@ -18,7 +18,11 @@
     </update>
 
     <update id="updateStock">
-        update shop set number = number -1 where id = #{goodsId}
+        update shop set number = number - 1 where id = #{goodsId}
+    </update>
+
+    <update id="updateAddStock">
+        update shop set number = number + 1 where id = #{goodsId}
     </update>
 
     <delete id="deleteGoods">

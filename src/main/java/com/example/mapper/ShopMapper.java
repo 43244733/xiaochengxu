@@ -41,4 +41,9 @@ public interface ShopMapper
      * 减库存
      */
     int updateStock(Integer goodsId);
+
+    /**
+     * 加库存
+     */
+    int updateAddStock(Integer goodsId);
 }

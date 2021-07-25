@@ -36,12 +36,23 @@
     </repositories>
 
     <dependencies>
+        <!--    spring-boot-starter-security    -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <!--        thymeleaf整合spring security-->
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity5</artifactId>
+            <version>3.0.4.RELEASE</version>
+        </dependency>
+
         <!--elasticsearch-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
         </dependency>
-
 
         <!--map转换成JSON-->
         <dependency>
@@ -56,7 +67,6 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>-->
-
 
         <!--swagger-->
         <!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger2 -->

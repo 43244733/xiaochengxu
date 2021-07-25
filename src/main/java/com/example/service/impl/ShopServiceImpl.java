@@ -95,4 +95,9 @@ public class ShopServiceImpl implements ShopService
     public int updateStock(Integer goodsId) {
         return shopMapper.updateStock(goodsId);
     }
+
+    @Override
+    public int updateAddStock(Integer goodsId) {
+        return shopMapper.updateAddStock(goodsId);
+    }
 }

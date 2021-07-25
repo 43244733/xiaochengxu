@@ -105,8 +105,7 @@ public class WxPayController {
                 }
             });
 
-            completableFuture.whenComplete((t, u) -> {
-
+            completableFuture.whenCompleteAsync((t, u) -> {
                 if (t == true) {
                     // 订单模块加入支付时间
                     DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -119,13 +118,17 @@ public class WxPayController {
                     }
                     orderInfoService.updatePayTime(date, Long.valueOf(outTradeNo));
                 }
-
-            }).exceptionally((e) -> {
-
-                LOGGER.error(e.toString());
+            }).exceptionally((u) -> {
+                LOGGER.error(u.toString());
                 return false;
+            });
 
-            }).get();
+            /**
+             * 如果不使用.get(）方法阻塞 那么有可能会产生不安全问题：
+             * CompletableFuture默认创建的是守护线程
+             * 如果不使用.get()方法阻塞 那么当主线程执行完毕 可能守护线程就直接关闭了
+             * 当然 生产环境上会一直开着 因此真是生产环境不会出现这种问题
+             */
 
             return "success";
         }
