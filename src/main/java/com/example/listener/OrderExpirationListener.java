@@ -1,6 +1,5 @@
 package com.example.listener;
 
-import com.example.controller.FaceController;
 import com.example.service.OrderInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,5 +33,4 @@ public class OrderExpirationListener extends KeyExpirationEventMessageListener {
             LOGGER.info("订单号：" + expiredOrderId + "已过期, 修改失败");
         }
     }
-
 }
