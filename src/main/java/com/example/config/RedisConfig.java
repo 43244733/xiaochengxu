@@ -3,20 +3,23 @@ package com.example.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.KeyExpirationEventMessageListener;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @EnableAutoConfiguration
-/**
- * Redis序列化
- */
 public class RedisConfig {
+
+    @Autowired
+    RedisConnectionFactory redisConnectionFactory;
 
     @Bean
     @SuppressWarnings("all")
@@ -42,4 +45,20 @@ public class RedisConfig {
 
         return template;
     }
+
+    /**
+     * 配置redis监听事件
+     */
+    @Bean
+    public RedisMessageListenerContainer redisMessageListenerContainer() {
+        RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();
+        redisMessageListenerContainer.setConnectionFactory(redisConnectionFactory);
+        return redisMessageListenerContainer;
+    }
+
+    @Bean
+    public KeyExpirationEventMessageListener keyExpirationEventMessageListener() {
+        return new KeyExpirationEventMessageListener(this.redisMessageListenerContainer());
+    }
+
 }
