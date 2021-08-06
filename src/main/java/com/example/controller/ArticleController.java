@@ -57,8 +57,6 @@ public class ArticleController {
         long l = System.currentTimeMillis();
         httpServletRequest.setAttribute("articleList", articleService.selectAllArticle());
         httpServletRequest.setAttribute("articleCount", articleService.selectArticleCount());
-//        session.setAttribute("articleList", articleService.selectAllArticle());
-//        session.setAttribute("articleCount", articleService.selectArticleCount());
         System.out.println("花费了：" + (System.currentTimeMillis() - l));
         return mv;
     }
