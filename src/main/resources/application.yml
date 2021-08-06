@@ -17,6 +17,8 @@ spring:
     password: 123456
   jpa:
     database: mysql
+  freemarker:
+    checkTemplateLocation: false
 
   redis:
     host: 112.126.72.145

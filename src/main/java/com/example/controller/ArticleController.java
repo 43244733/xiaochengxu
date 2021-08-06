@@ -4,6 +4,7 @@ import com.example.bean.Article;
 import com.example.bean.View;
 import com.example.bean.ViewResult;
 import com.example.service.ArticleService;
+import com.example.util.HttpRequest;
 import com.example.util.RedisUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,8 +16,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.support.HttpRequestHandlerServlet;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -39,19 +43,23 @@ public class ArticleController {
     // 日志记录
     private static final Logger LOGGER = LoggerFactory.getLogger(ArticleController.class);
 
-    @ApiOperation("防止别人搞数据库")
+    /*@ApiOperation("防止别人搞数据库")
     @RequestMapping(value = {"", "index"}, method = RequestMethod.GET)
     public ModelAndView nihao(HttpSession session) {
         ModelAndView mv = new ModelAndView("nihao");
         return mv;
-    }
+    }*/
 
-    @ApiOperation("主页跳转")
-    @RequestMapping(value = "master", method = RequestMethod.GET)
-    public ModelAndView index(HttpSession session) {
+    @ApiOperation("商家后台主页")
+    @RequestMapping(value = {"/", "master"}, method = RequestMethod.GET)
+    public ModelAndView index(HttpServletRequest httpServletRequest) {
         ModelAndView mv = new ModelAndView("index");
-        session.setAttribute("articleList", articleService.selectAllArticle());
-        session.setAttribute("articleCount", articleService.selectArticleCount());
+        long l = System.currentTimeMillis();
+        httpServletRequest.setAttribute("articleList", articleService.selectAllArticle());
+        httpServletRequest.setAttribute("articleCount", articleService.selectArticleCount());
+//        session.setAttribute("articleList", articleService.selectAllArticle());
+//        session.setAttribute("articleCount", articleService.selectArticleCount());
+        System.out.println("花费了：" + (System.currentTimeMillis() - l));
         return mv;
     }
 
@@ -160,9 +168,9 @@ public class ArticleController {
 
     @ApiOperation("查询所有文章")
     @RequestMapping(value = "selectAllArticle", method = RequestMethod.GET)
-    public ModelAndView selectAllArticle(HttpSession session) {
+    public ModelAndView selectAllArticle(HttpServletRequest request) {
         ModelAndView mv = new ModelAndView("doSelectAllArticle");
-        session.setAttribute("articleList", articleService.selectAllArticle());
+        request.setAttribute("articleList", articleService.selectAllArticle());
         return mv;
     }
 
