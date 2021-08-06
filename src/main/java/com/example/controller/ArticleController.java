@@ -7,6 +7,7 @@ import com.example.service.ArticleService;
 import com.example.util.RedisUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.elasticsearch.common.collect.CopyOnWriteHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 文章管理
@@ -91,9 +96,25 @@ public class ArticleController {
 
         Article article = articleService.selectArticleById(aId);
 
+        // 对缓存查询加锁，如果KEY不存在，就加锁，然后查DB入缓存，
+        // 然后解锁；其他进程如果发现有锁就等待，然后等解锁后返回数据或者进入DB查询
         if (redisUtil.get(key) == null) {
-            Integer articleNum = article.getNum() + 1;
-            redisUtil.set(key, articleNum);
+            Lock lock = new ReentrantLock();
+            try {
+                lock.lock();
+                if (redisUtil.get(key) == null) {
+                    Integer articleNum = article.getNum() + 1;
+                    redisUtil.set(key, articleNum);
+                } else {
+                    redisUtil.incr(key, 1);
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            finally {
+                lock.unlock();
+            }
         } else {
             // 阅读量+1
             redisUtil.incr(key, 1);
