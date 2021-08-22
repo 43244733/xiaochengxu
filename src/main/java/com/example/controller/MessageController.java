@@ -29,8 +29,7 @@ public class MessageController {
     @ApiOperation("跳转发表评论页面")
     @RequestMapping(value = "insertMessage", method = RequestMethod.GET)
     public ModelAndView insertMessage() {
-        ModelAndView mv = new ModelAndView("insertMessage");
-        return mv;
+        return new ModelAndView("insertMessage");
     }
 
     /*@RequestMapping(value = "doInsertMessage", method = RequestMethod.GET)

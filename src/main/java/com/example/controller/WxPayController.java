@@ -1,26 +1,25 @@
 package com.example.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.example.bean.CallBack;
 import com.example.bean.OrderInfo;
+import com.example.bean.User;
 import com.example.dao.WxPayDao;
 import com.example.service.CallBackService;
 import com.example.service.OrderInfoService;
 import com.example.service.ShopService;
 import com.example.util.Sign;
 import com.example.util.WxConstUtil;
-import com.google.gson.Gson;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.DigestUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
-
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.InetAddress;
+import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -30,6 +29,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 public class WxPayController {
@@ -45,6 +45,9 @@ public class WxPayController {
 
     @Autowired
     private OrderInfoService orderInfoService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WxPayController.class);
 
@@ -98,15 +101,11 @@ public class WxPayController {
                 int insertCallBack = callBackService.insertCallBack(new CallBack(appId, tradeNo, inTradeNo, outTradeNo, tradeType, description,
                         payType, amount, attach, createTime, payTime, notifyCount));
 
-                if (insertCallBack > 0) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return insertCallBack > 0;
             });
 
             completableFuture.whenCompleteAsync((t, u) -> {
-                if (t == true) {
+                if (t) {
                     // 订单模块加入支付时间
                     DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     Date date = null;
@@ -170,15 +169,43 @@ public class WxPayController {
                            @RequestParam(value = "goodsId") Integer goodsId,
                            @RequestParam(value = "goodsName") String goodsName,
                            @RequestParam(value = "goodsCount", defaultValue = "1") Integer goodsCount,
-                           @RequestParam(value = "goodsPrice") BigDecimal goodsPrice
-    ) throws UnknownHostException {
+                           @RequestParam(value = "goodsPrice") BigDecimal goodsPrice,
+                           HttpServletRequest request
+    ) throws UnknownHostException, UnsupportedEncodingException {
 
         Map<String, String> wxOrder;
 
-        // TODO
-        // 获得用户信息
-        Integer userId = 1;
-        String userName = "nihao";
+        // 获得用户信息 Cookie
+        /*
+        String userInfo;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null && cookies.length > 0) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("USER_LOGIN")) {
+                    userInfo = URLDecoder.decode(cookie.getValue(), "UTF-8");
+                }
+            }
+        }
+        */
+
+        // token
+        // 从请求头中获取数据
+        String token = request.getHeader("token");
+        token = token == null ? "" : token;
+        // 利用过期时间查看登录状态 不允许token为空值
+        Long expire = redisTemplate.getExpire(token);
+
+        User user = null;
+        if (expire > 0) { // 是登录状态
+            // 重置token时间
+            redisTemplate.expire(token, 30L, TimeUnit.MINUTES);
+            user = (User) redisTemplate.opsForValue().get(token);
+        } else {
+            return "未登录";
+        }
+
+        Integer userId = user.getId();;
+        String userName = user.getName();
 
         // 判断库存
         Integer stock = shopService.selectGoodsNumById(goodsId);

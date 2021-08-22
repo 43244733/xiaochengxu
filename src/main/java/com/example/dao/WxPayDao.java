@@ -79,6 +79,8 @@ public class WxPayDao {
         order.put("app_id", WxConstUtil.APP_ID);
         order.put("description", goodsName);
 
+        
+
         // 回调方法
         // 获取本机IPV4地址
         String IPV4 = InetAddress.getLocalHost().getHostAddress();

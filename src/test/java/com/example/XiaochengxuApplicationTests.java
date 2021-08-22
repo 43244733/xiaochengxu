@@ -36,7 +36,7 @@ import java.util.concurrent.*;
 
 @SpringBootTest
 class SpringbootRedisApplicationTests {
-    @Autowired
+  /*  @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
     @Autowired
@@ -52,10 +52,10 @@ class SpringbootRedisApplicationTests {
 
     ExecutorService threadPool = Executors.newFixedThreadPool(3);
 
-    /**
+    *//**
      * 解析数据 放入ES中
-     */
-    @Test
+     *//*
+    *//*@Test
     void search() throws IOException {
         List<Shop> shops = shopService.selectAll();
 
@@ -73,9 +73,9 @@ class SpringbootRedisApplicationTests {
 
         System.out.println(!bulk.hasFailures());
 
-    }
+    }*//*
 
-    @Test
+   *//* @Test
     void search1() throws IOException {
         SearchRequest searchRequest = new SearchRequest(ElasticSearchUtil.ES_INDEX);
         // 构造搜索条件
@@ -105,7 +105,7 @@ class SpringbootRedisApplicationTests {
         }
 
         System.out.println(shopList);
-    }
+    }*//*
 
     @Test
     void contextLoads() {
@@ -139,7 +139,7 @@ class SpringbootRedisApplicationTests {
         System.out.println(messages);
     }
 
-    @Test
+   *//* @Test
     void test2() {
         User acceptUser = new User("ninini", "11111");
         System.out.println(acceptUser.getName() + ":msg");
@@ -182,7 +182,7 @@ class SpringbootRedisApplicationTests {
         });
 
 
-    }
+    }*//*
 
     @Test
     void test3() {
@@ -193,5 +193,5 @@ class SpringbootRedisApplicationTests {
             });
         }
 
-    }
+    }*/
 }

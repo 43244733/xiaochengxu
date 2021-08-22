@@ -54,10 +54,26 @@ public class ArticleController {
     @RequestMapping(value = {"/", "master"}, method = RequestMethod.GET)
     public ModelAndView index(HttpServletRequest httpServletRequest) {
         ModelAndView mv = new ModelAndView("index");
-        long l = System.currentTimeMillis();
         httpServletRequest.setAttribute("articleList", articleService.selectAllArticle());
         httpServletRequest.setAttribute("articleCount", articleService.selectArticleCount());
-        System.out.println("花费了：" + (System.currentTimeMillis() - l));
+        return mv;
+    }
+
+    @ApiOperation("商家后台主页")
+    @RequestMapping(value = {"masterTwo"}, method = RequestMethod.GET)
+    public ModelAndView masterTwo(HttpServletRequest httpServletRequest) {
+        ModelAndView mv = new ModelAndView("index");
+        if (redisUtil.get("allArticle") != null) {
+            httpServletRequest.setAttribute("articleList", redisUtil.get("articleList"));
+            httpServletRequest.setAttribute("articleCount", redisUtil.get("articleCount"));
+        } else {
+            List<Article> articles = articleService.selectAllArticle();
+            int ArticleCount = articleService.selectArticleCount();
+            redisUtil.set("articleList", articles);
+            redisUtil.set("articleCount", ArticleCount);
+            httpServletRequest.setAttribute("articleList", articles);
+            httpServletRequest.setAttribute("articleCount", ArticleCount);
+        }
         return mv;
     }
 
