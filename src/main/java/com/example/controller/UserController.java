@@ -74,7 +74,6 @@ public class UserController {
     @RequestMapping(value = "loginOut", method = RequestMethod.GET)
     public CommonResult loginOut(HttpServletRequest request) {
         // 如果令牌不对都进不来此方法
-
         String token = request.getHeader("token");
         // 删除Redis中的token
         Boolean delete = redisTemplate.delete(token);
