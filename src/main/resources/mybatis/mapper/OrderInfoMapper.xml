@@ -24,7 +24,7 @@
     </insert>
 
     <update id="updatePayTime">
-        update goods_order set pay_date = #{date} where id = #{id}
+        update goods_order set pay_date = #{date}, status = 1 where id = #{id}
     </update>
 
     <update id="updateOverTimeStatus">

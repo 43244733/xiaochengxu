@@ -4,6 +4,7 @@ import com.example.bean.Shop;
 import com.example.mapper.ShopMapper;
 import com.example.service.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,25 @@ public class ShopServiceImpl implements ShopService
 {
     @Autowired
     private ShopMapper shopMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Override
+    public int getStock(Integer goodsId) {
+        return (int) redisTemplate.opsForValue().get(goodsId);
+    }
+
+    @Override
+    public boolean decrStock(Integer goodsId) {
+        Long decrement = redisTemplate.opsForValue().decrement(goodsId);
+        return decrement >= 0;
+    }
+
+    @Override
+    public List<Integer> selectAllGoodsId() {
+        return shopMapper.selectAllGoodsId();
+    }
 
     @Override
     public List<Shop> selectAll()
@@ -100,4 +120,6 @@ public class ShopServiceImpl implements ShopService
     public int updateAddStock(Integer goodsId) {
         return shopMapper.updateAddStock(goodsId);
     }
+
+
 }

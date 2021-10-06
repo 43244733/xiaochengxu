@@ -63,4 +63,8 @@
         select number from shop where id = #{goodsId}
     </select>
 
+    <select id="selectAllGoodsId" resultType="java.lang.Integer">
+        select id from shop;
+    </select>
+
 </mapper>

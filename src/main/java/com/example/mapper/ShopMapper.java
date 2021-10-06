@@ -46,4 +46,10 @@ public interface ShopMapper
      * 加库存
      */
     int updateAddStock(Integer goodsId);
+
+    /**
+     * 查询所有商品ID
+     * @return
+     */
+    List<Integer> selectAllGoodsId();
 }

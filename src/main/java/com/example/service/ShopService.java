@@ -44,4 +44,24 @@ public interface ShopService
      * 加库存
      */
     int updateAddStock(Integer goodsId);
+
+    /**
+     * 在Redis中查询该商品库存
+     * @param goodsId
+     * @return
+     */
+    int getStock(Integer goodsId);
+
+    /**
+     * 库存 -1
+     * @param goodsId
+     * @return
+     */
+    boolean decrStock(Integer goodsId);
+
+    /**
+     * 查询所有商品ID
+     * @return
+     */
+    List<Integer> selectAllGoodsId();
 }

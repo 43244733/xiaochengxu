@@ -17,7 +17,7 @@ public interface OrderInfoService
     int insertOrderInfo(OrderInfo orderInfo);
 
     /**
-     * 添加支付时间
+     * 添加支付时间和支付状态
      * @param date
      * @return
      */

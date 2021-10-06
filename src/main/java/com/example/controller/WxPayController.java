@@ -4,22 +4,24 @@ import com.example.bean.CallBack;
 import com.example.bean.OrderInfo;
 import com.example.bean.User;
 import com.example.dao.WxPayDao;
+import com.example.service.BloomFilterService;
 import com.example.service.CallBackService;
 import com.example.service.OrderInfoService;
 import com.example.service.ShopService;
+import com.example.util.RedisUtil;
 import com.example.util.Sign;
 import com.example.util.WxConstUtil;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.InetAddress;
-import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -49,6 +51,12 @@ public class WxPayController {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
+    @Autowired
+    private BloomFilterService bloomFilterService;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(WxPayController.class);
 
     @ApiOperation("支付成功，获取异步回调")
@@ -75,9 +83,7 @@ public class WxPayController {
         Map<String, String> order = new TreeMap<>();
 
         order.put("amount", orderInfo.getGoodsPrice().stripTrailingZeros().toPlainString().trim());
-
         order.put("app_id", WxConstUtil.APP_ID);
-
         order.put("description", orderInfo.getGoodsName());
 
         // 回调方法
@@ -104,23 +110,16 @@ public class WxPayController {
                 return insertCallBack > 0;
             });
 
+            /*
             completableFuture.whenCompleteAsync((t, u) -> {
                 if (t) {
-                    // 订单模块加入支付时间
-                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    Date date = null;
-                    try {
-                        date = format.parse(payTime);
-                    }
-                    catch (ParseException e) {
-                        LOGGER.error("支付时间生成出错：", e);
-                    }
-                    orderInfoService.updatePayTime(date, Long.valueOf(outTradeNo));
+
                 }
             }).exceptionally((u) -> {
                 LOGGER.error(u.toString());
                 return false;
             });
+            */
 
             /**
              * 如果不使用.get(）方法阻塞 那么有可能会产生不安全问题：
@@ -129,6 +128,15 @@ public class WxPayController {
              * 当然 生产环境上会一直开着 因此真是生产环境不会出现这种问题
              */
 
+            // 订单加入支付时间 并修改订单状态为已支付
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = null;
+            try {
+                date = format.parse(payTime);
+            } catch (ParseException e) {
+                LOGGER.error("支付时间生成出错：", e);
+            }
+            orderInfoService.updatePayTime(date, Long.valueOf(outTradeNo));
             return "success";
         }
 
@@ -171,7 +179,7 @@ public class WxPayController {
                            @RequestParam(value = "goodsCount", defaultValue = "1") Integer goodsCount,
                            @RequestParam(value = "goodsPrice") BigDecimal goodsPrice,
                            HttpServletRequest request
-    ) throws UnknownHostException, UnsupportedEncodingException {
+    ) throws UnknownHostException {
 
         Map<String, String> wxOrder;
 
@@ -187,6 +195,12 @@ public class WxPayController {
             }
         }
         */
+
+        // 布隆过滤器
+        boolean flag = bloomFilterService.goodsIdExist(goodsId);
+        if (!flag) {
+            return "该商品不存在，无法生成订单";
+        }
 
         // token
         // 从请求头中获取数据
@@ -204,24 +218,21 @@ public class WxPayController {
             return "未登录";
         }
 
-        Integer userId = user.getId();;
+        Integer userId = user.getId();
         String userName = user.getName();
 
         // 判断库存
-        Integer stock = shopService.selectGoodsNumById(goodsId);
-        if (stock <= 0) {
+        boolean b = preOrder(userId, goodsId);
+        if (!b) {
             return "库存不足";
         }
 
-        // 减库存
-        int i = shopService.updateStock(goodsId);
-        if (i >= 1) {
-            // 下订单 微信支付
-            wxOrder = payDao.wxPay(recName, recAddress, recPhone, goodsId, userId, userName, goodsCount,
-                    goodsPrice, goodsName);
-        } else {
-            return "库存不足";
-        }
+        // 下订单 微信支付
+        wxOrder = payDao.wxPay(recName, recAddress, recPhone, goodsId, userId, userName, goodsCount,
+                goodsPrice, goodsName);
+
+        // 删除redis中的缓存
+        redisTemplate.delete("goodsNums:" + goodsId);
 
         return wxOrder;
 
@@ -253,7 +264,59 @@ public class WxPayController {
 
     }
 
+    /**
+     * 判断库存是否足够
+     *
+     * @param userId
+     * @param goodsId
+     * @return
+     */
+    public boolean preOrder(Integer userId, Integer goodsId) {
+        //判断库存是否足够
+        int preStock = shopService.getStock(goodsId);
+        if (preStock <= 0) {
+            return false;
+        }
+
+        //先生成预订单，分布式锁，表示用户已经购买过了，否则并发情况下会产生重复购买的情况
+        long result = redisTemplate.opsForSet().add(userId, goodsId);
+        if (result != 1) {
+            // 证明这个商品已经买过了 且没有进行支付
+            return false;
+        }
+
+        //如果result == 1则成功，再扣库存
+        boolean flag = decr(goodsId.toString());
+        //可能存在并发情况，扣减之后的库存  < 0，表示库存扣减失败
+        if (!flag) {
+            //删除已经创建的预订单
+            redisTemplate.opsForSet().pop(userId);
+            return false;
+        }
+        //判断库存是否小于等于0
+        int afterStock = shopService.getStock(goodsId);
+        if (afterStock <= 0) {
+            // TODO 更新标志位已售完
+        }
+        return true;
+    }
+
+    public boolean decr(String key) {
+        redisTemplate.watch(key);
+        String result = (String) redisUtil.get(key);
+        if (StringUtils.isEmpty(result) || Integer.parseInt(result) <= 0) {
+            //获取值，如果为0，则返回失败
+            return false;
+        }
+        redisTemplate.multi(); // 开启事务
+        redisTemplate.opsForValue().decrement(key);
+        return !CollectionUtils.isEmpty(redisTemplate.exec()); //提交事务，如果此时key被改动了，则返回null，否则返回非空
+    }
+
     public static void main(String[] args) {
+
+
+
         WxPayController wxPayController = new WxPayController();
      /*   Map map = null;
         try {
